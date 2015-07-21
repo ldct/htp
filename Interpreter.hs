@@ -11,7 +11,6 @@ runProgram program = foldM execute M.empty program >> return ()
 execute :: Env -> Command -> IO Env
 execute env (Assign name val) = return $ M.insert name (eval env val) env
 execute env (Print expr)      = (putStrLn . show . (eval env)) expr >> return env
---execute env (Read name)       = getLine >>= (\input -> return $ M.insert name (read input) env)
 execute env (Read name)       = getLine >>= (\input -> execute env (Assign name (Val (read input))))
 
 eval :: Env -> Expr -> Int

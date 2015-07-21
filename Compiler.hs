@@ -4,7 +4,6 @@ import Data.List (intersperse, nub)
 import Ast
 
 compile :: Program -> String
--- compile program = preProgram ++ (unlines . map ("  " ++ ) . concatMap ($ program)) [declareVars . findVars, map transformCommand] ++ postProgram
 compile program = preProgram ++ (unlines . map ("  " ++ )) (declarations ++ mainProgram) ++ postProgram
   where
   preProgram :: String
