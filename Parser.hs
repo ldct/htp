@@ -1,7 +1,7 @@
 -- TODO: replace all uses of head and tail with pattern matching/total functions
 module Parser where
 import qualified Text.Parsec as Parsec
-import Data.Char (isDigit)
+import Data.Char (isDigit, isAlpha)
 
 import Ast
 
@@ -35,7 +35,7 @@ exprParser = do
   Parsec.spaces
 
   rest <- Parsec.many Parsec.anyChar
-  let item = if (all isDigit itemRaw) then Val (read itemRaw) else Var (head itemRaw)
+  let item = if (all isDigit itemRaw) then Val (read itemRaw) else if (isAlpha . head) itemRaw then Var (head itemRaw) else error "invalid expression"
 
   return $ case rest of
     "" -> item
