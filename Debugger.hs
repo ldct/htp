@@ -4,7 +4,7 @@ import System.IO (hFlush, stdout)
 
 import Ast (Program, Env)
 import Interpreter (execute, initialEnv)
-import Parser (commandParser, runParser)
+import Parser (commandParser, runParser, resolveError)
 
 debug :: Program -> [String] -> IO ()
 debug program stdin = step program [] [(initialEnv, [], stdin)]
@@ -25,7 +25,7 @@ step program executed_program states@(ess:rest) = do
          rest
     "r" -> do
       newLine <- getLine
-      step ((either (error . show) id (runParser commandParser newLine)):(tail program))
+      step ((resolveError (runParser commandParser newLine)):(tail program))
          executed_program
          states
     "io" -> case ess of
