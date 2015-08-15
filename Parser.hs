@@ -1,23 +1,26 @@
 -- TODO: replace all uses of head and tail with pattern matching/total functions
 module Parser where
-import qualified Text.Parsec as Parsec
+import Text.Parsec hiding (runParser)
 import Data.Char (isDigit, isAlpha)
+import Control.Monad.Identity
 
 import Ast
+
+type Parser a = ParsecT [Char] () Identity a
 
 parseProgram :: String -> Program
 parseProgram = map (either (error . show) id . runParser commandParser) . lines
 
--- TODO: Add type signature
-runParser parser text = Parsec.parse parser "(source)" text
+runParser :: Parser a -> String -> Either ParseError a
+runParser parser = parse parser "(source)"
 
-commandParser :: Parsec.Parsec String () Command
+commandParser :: Parser Command
 commandParser = do
-  command <- Parsec.many1 Parsec.letter
+  command <- many1 letter
 
-  Parsec.spaces
+  spaces
 
-  rest <- Parsec.many1 Parsec.anyChar
+  rest <- many1 anyChar
   let args = words rest
 
   return $ case command of
@@ -35,16 +38,16 @@ commandParser = do
 
     _ -> error "Invalid command"
 
-exprParser :: Parsec.Parsec String () Expr
+exprParser :: Parser Expr
 exprParser = do
-  Parsec.spaces
+  spaces
 
-  itemRaw <- Parsec.manyTill (Parsec.digit Parsec.<|> Parsec.oneOf ['a'..'z'])
-             ((Parsec.space >> return ()) Parsec.<|> Parsec.eof)
+  itemRaw <- manyTill (digit <|> oneOf ['a'..'z'])
+             ((space >> return ()) <|> eof)
 
-  Parsec.spaces
+  spaces
 
-  rest <- Parsec.many Parsec.anyChar
+  rest <- many anyChar
   let item = if (all isDigit itemRaw)
              then Val (read itemRaw)
              else if (isAlpha . head) itemRaw
