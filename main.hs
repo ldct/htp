@@ -1,6 +1,5 @@
 import System.Environment (getArgs)
 
-import Ast
 import Interpreter (runProgram)
 import Compiler (compile)
 import Parser (parseProgram)

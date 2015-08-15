@@ -11,6 +11,7 @@ execute :: (Env, [String], [String]) -> Command -> (Env, [String], [String])
 execute (env, stdout, stdin) (Assign name val) = (M.insert name (eval env val) env, stdout, stdin)
 execute (env, stdout, stdin) (Print expr)      = (env, ((show . (eval env)) expr):stdout, stdin)
 execute (env, stdout, x:xs) (Read name)        = execute (env, stdout, xs) (Assign name (Val (read x)))
+execute (_, _, []) (Read _)                    = error "Ran out of input"
 
 eval :: Env -> Expr -> Int
 eval _   (Val val)  = val
