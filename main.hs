@@ -17,4 +17,4 @@ prog :: Program
 {-- prog = [Assign 'a' (Add (Val 2) (Val 3)),
         Read 'b',
         Print (Add (Var 'a') (Var 'b'))] --}
-prog = parseProgram "assign a 1 - 1 * 2\nprint a"
+prog = parseProgram . unlines $ ["assign a 3 * 2 + 3 + 4", "read b", "assign b b + 1", "print a + b"]
