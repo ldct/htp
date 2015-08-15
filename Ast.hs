@@ -7,14 +7,14 @@ type Env = M.Map Char Int
 type Program = [Command]
 
 data Command
-  = Print Expr
-  | Read Char
+  = Print  Expr
+  | Read   Char
   | Assign Char Expr
 
 instance Show Command where
-  show (Read name) = "read " ++ [name]
+  show (Read name)        = "read " ++ [name]
   show (Assign name expr) = "assign " ++ [name] ++ show expr
-  show (Print expr) = "print " ++ show expr
+  show (Print expr)       = "print " ++ show expr
 
 data Expr
   = Add Expr Expr
