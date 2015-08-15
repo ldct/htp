@@ -23,4 +23,4 @@ main = do
       contents <- readFile filename
       debug (parseProgram contents) ["1", "10"]
 
-    _ -> putStrLn "Usage: `./main c filename` or `./main i filename`"
+    _ -> putStrLn "Usage: `./main [cdi] filename`"

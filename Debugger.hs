@@ -13,10 +13,14 @@ step program executed_program states@(ess:rest) = do
   hFlush stdout
   command <- getLine
   case command of
-    "forward" -> do
+    "f" -> do
       step (tail program)
          ([head program] ++ executed_program)
          ((execute ess (head program)):states)
+    "b" -> do
+      step ((head executed_program):program)
+         (tail executed_program)
+         rest
     "io" -> case ess of
       (_, stdout, stdin) -> do
         putStr "\27[0m"
@@ -25,7 +29,7 @@ step program executed_program states@(ess:rest) = do
         putStr "stdout: "
         putStrLn . show . reverse $ stdout
         step program executed_program states
-    "program" -> do
+    "p" -> do
       putStr "\27[0m"
       putStr . unlines . map show . reverse $ executed_program
       putStrLn "------------"
