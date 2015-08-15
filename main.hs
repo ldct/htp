@@ -17,23 +17,28 @@ import Parser (parseProgram)
 --        (_, stdout, _) -> (putStr . unlines . reverse) stdout
 --    _ -> putStrLn "Usage: `./main c filename` or `./main i filename`"
 
-step :: Program -> (Env, [String], [String]) -> IO ()
-step program ess = do
+step :: Program -> Program -> (Env, [String], [String]) -> IO ()
+step program executed_program ess = do
 	command <- getLine
 	case command of
 		"forward" -> do
-			step (tail program) (execute ess (head program))
+			step (tail program) ([head program] ++ executed_program) (execute ess (head program))
 		"stdin" -> do
 			case ess of (_, _, stdin) -> putStrLn . show $ stdin
-			step program ess
+			step program executed_program ess
 		"stdout" -> do
 			case ess of (_, stdout, _) -> putStrLn . show $ stdout
-			step program ess
+			step program executed_program ess
+		"program" -> do
+			putStrLn . unlines . map show . reverse $ executed_program
+			putStrLn "------------"
+			putStrLn . unlines . map show $ program
+			step program executed_program ess
 		_ -> do
 			putStrLn "???"
-			step program ess
+			step program executed_program ess
 
 main :: IO ()
 main = do
 	contents <- readFile "test.np"
-	step (parseProgram contents) (initialEnv, [], ["1", "10"])
+	step (parseProgram contents) [] (initialEnv, [], ["1", "10"])
