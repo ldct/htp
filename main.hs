@@ -12,6 +12,7 @@ main = do
     ["c" ,filename] -> (putStr . compile . parseProgram) =<< readFile filename
     ["i" ,filename] -> do
       contents <- readFile filename
-      case (runProgram . parseProgram $ contents) of
-        (_, stdout) -> (putStr . unlines . reverse) stdout
+      stdin <- getContents
+      case ((runProgram stdin) . parseProgram $ contents) of
+        (_, stdout, _) -> (putStr . unlines . reverse) stdout
     _ -> putStrLn "Usage: `./main c filename` or `./main i filename`"

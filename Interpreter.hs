@@ -4,13 +4,13 @@ import qualified Data.Map.Strict as M
 
 import Ast
 
-runProgram :: Program -> (Env, [String])
-runProgram program = foldl execute (M.empty, []) program
+runProgram :: String -> Program -> (Env, [String], [String])
+runProgram stdin program = foldl execute (M.empty, [], lines stdin) program
 
-execute :: (Env, [String]) -> Command -> (Env, [String])
-execute (env, stdout) (Assign name val) = (M.insert name (eval env val) env, stdout)
-execute (env, stdout) (Print expr)      = (env, ((show . (eval env)) expr):stdout)
---execute env output (Read name)       = getLine >>= (\input -> execute env (Assign name (Val (read input))))
+execute :: (Env, [String], [String]) -> Command -> (Env, [String], [String])
+execute (env, stdout, stdin) (Assign name val) = (M.insert name (eval env val) env, stdout, stdin)
+execute (env, stdout, stdin) (Print expr)      = (env, ((show . (eval env)) expr):stdout, stdin)
+execute (env, stdout, x:xs) (Read name)        = execute (env, stdout, xs) (Assign name (Val (read x)))
 
 eval :: Env -> Expr -> Int
 eval _   (Val val)  = val
