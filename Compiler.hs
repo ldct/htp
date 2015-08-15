@@ -4,11 +4,11 @@ import Data.List (intersperse, nub)
 import Ast
 
 compile :: Program -> String
-compile program = preProgram ++ (unlines . map ("  " ++ )) (declarations ++ mainProgram) ++ postProgram
+compile program = preProgram ++ (unlines . map ("  " ++ )) (declarations:mainProgram) ++ postProgram
   where
   preProgram :: String
   preProgram = "#include <stdio.h>\nint main() {\n"
-  declarations :: [String]
+  declarations :: String
   declarations = (declareVars . findVars) program
   mainProgram :: [String]
   mainProgram = map transformCommand program
@@ -23,13 +23,13 @@ transformCommand (Read name)       = "scanf(\"%d\", &" ++ name:");"
 transformExpr :: Expr -> String
 transformExpr (Val val)  = show val
 transformExpr (Var name) = [name]
-transformExpr (Add a b)  = concat . (intersperse "+") . (map transformExpr) $ [a, b]
-transformExpr (Sub a b)  = concat . (intersperse "-") . (map transformExpr) $ [a, b]
-transformExpr (Mul a b)  = concat . (intersperse "*") . (map transformExpr) $ [a, b]
-transformExpr (Div a b)  = concat . (intersperse "/") . (map transformExpr) $ [a, b]
+transformExpr (Add a b)  = ('(':) . (++ ")") . concat . (intersperse "+") . (map transformExpr) $ [a, b]
+transformExpr (Sub a b)  = ('(':) . (++ ")") . concat . (intersperse "-") . (map transformExpr) $ [a, b]
+transformExpr (Mul a b)  = ('(':) . (++ ")") . concat . (intersperse "*") . (map transformExpr) $ [a, b]
+transformExpr (Div a b)  = ('(':) . (++ ")") . concat . (intersperse "/") . (map transformExpr) $ [a, b]
 
-declareVars :: [Char] -> [String]
-declareVars = map (\var -> "int " ++ [var] ++ ";") -- . findVars
+declareVars :: [Char] -> String
+declareVars = (++ ";") . ("int " ++) . (concat . intersperse ", ") . (map (:[]))
 
 findVars :: Program -> [Char]
 findVars = nub . (concatMap findVarsCommand)
