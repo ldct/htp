@@ -17,17 +17,23 @@ instance Show Command where
   show (Print expr)       = "print " ++ show expr
 
 data Expr
-  = Add Expr Expr
-  | Sub Expr Expr
-  | Mul Expr Expr
-  | Div Expr Expr
-  | Val Int
-  | Var Char
+  = Op Arith Expr Expr
+  | Val Value
+  | Var Variable
+
+data Arith
+  = Add
+  | Sub
+  | Mul
+  | Div
+
+type Value = Int
+type Variable = Char
 
 instance Show Expr where
   show (Val val)  = show val
   show (Var name) = [name]
-  show (Add a b)  = ('(':) . (++ ")") . concat . (intersperse "+") . (map show) $ [a, b]
-  show (Sub a b)  = ('(':) . (++ ")") . concat . (intersperse "-") . (map show) $ [a, b]
-  show (Mul a b)  = ('(':) . (++ ")") . concat . (intersperse "*") . (map show) $ [a, b]
-  show (Div a b)  = ('(':) . (++ ")") . concat . (intersperse "/") . (map show) $ [a, b]
+  show (Op Add a b)  = ('(':) . (++ ")") . concat . (intersperse "+") . (map show) $ [a, b]
+  show (Op Sub a b)  = ('(':) . (++ ")") . concat . (intersperse "-") . (map show) $ [a, b]
+  show (Op Mul a b)  = ('(':) . (++ ")") . concat . (intersperse "*") . (map show) $ [a, b]
+  show (Op Div a b)  = ('(':) . (++ ")") . concat . (intersperse "/") . (map show) $ [a, b]

@@ -36,6 +36,21 @@ commandParser = do
     "read"   -> let [ident] = expr in Read ident
     _        -> error "Invalid command"
 
+constChar :: Char -> a -> Parser a
+constChar c f = char c >> return f
+
+arithParser :: Parser Arith
+arithParser =    constChar '+' Add
+             <|> constChar '-' Sub
+             <|> constChar '*' Mul
+             <|> constChar '/' Div
+
+valueParser :: Parser Value
+valueParser = many1 digit >>= return . read
+
+varParser :: Parser Variable
+varParser = char
+
 exprParser :: Parser Expr
 exprParser = do
   spaces
