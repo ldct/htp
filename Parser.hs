@@ -14,9 +14,12 @@ runParser parser text = Parsec.parse parser "(source)" text
 commandParser :: Parsec.Parsec String () Command
 commandParser = do
   command <- Parsec.many1 Parsec.letter
+
   Parsec.spaces
+
   rest <- Parsec.many1 Parsec.anyChar
   let args = words rest
+
   return $ case command of
     "print" -> Print $ case (runParser exprParser rest) of
       Right expr -> expr
@@ -39,16 +42,13 @@ exprParser = do
 
   return $ case rest of
     "" -> item
-    ('+':xs) -> Add item $ case (runParser exprParser xs) of
-      Right expr -> expr
-      Left err -> (error . show) err
-    ('-':xs) -> Sub item $ case (runParser exprParser xs) of
-      Right expr -> expr
-      Left err -> (error . show) err
-    ('*':xs) -> Mul item $ case (runParser exprParser xs) of
-      Right expr -> expr
-      Left err -> (error . show) err
-    ('/':xs) -> Div item $ case (runParser exprParser xs) of
-      Right expr -> expr
-      Left err -> (error . show) err
+    ('+':xs) -> Add item (parseRest xs)
+    ('-':xs) -> Sub item (parseRest xs)
+    ('*':xs) -> Mul item (parseRest xs)
+    ('/':xs) -> Div item (parseRest xs)
     other -> error . show $ other
+  where
+  parseRest :: String -> Expr
+  parseRest rest = case (runParser exprParser rest) of
+    Right expr -> expr
+    Left err -> (error . show) err
