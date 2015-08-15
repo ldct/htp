@@ -4,6 +4,7 @@ import Ast
 import Interpreter (execute, initialEnv)
 import Compiler (compile)
 import Parser (parseProgram)
+import System.IO
 
 --main :: IO ()
 --main = do
@@ -19,21 +20,27 @@ import Parser (parseProgram)
 
 step :: Program -> Program -> (Env, [String], [String]) -> IO ()
 step program executed_program ess = do
+	putStr "\27[34m> "
+	hFlush stdout
 	command <- getLine
 	case command of
 		"forward" -> do
-			step (tail program) ([head program] ++ executed_program) (execute ess (head program))
+			step (tail program)
+				 ([head program] ++ executed_program)
+				 (execute ess (head program))
 		"io" -> case ess of
 			(_, stdout, stdin) -> do
+				putStr "\27[0m"
 				putStr "stdin: "
 				putStrLn . show $ stdin
 				putStr "stdout: "
 				putStrLn . show $ stdout
 				step program executed_program ess
 		"program" -> do
-			putStrLn . unlines . map show . reverse $ executed_program
+			putStr "\27[0m"
+			putStr . unlines . map show . reverse $ executed_program
 			putStrLn "------------"
-			putStrLn . unlines . map show $ program
+			putStr . unlines . map show $ program
 			step program executed_program ess
 		_ -> do
 			putStrLn "???"
