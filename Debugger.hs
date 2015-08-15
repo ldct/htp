@@ -2,7 +2,7 @@
 module Debugger where
 import System.IO (hFlush, stdout)
 
-import Ast (Program, Env)
+import Ast (Program, Env, Command)
 import Interpreter (execute, initialEnv)
 import Parser (commandParser, runParser, resolveError)
 
@@ -19,17 +19,22 @@ debugHelper allStates@(state:states) = do
   command <- getLine
   putStr "\27[0m"
   case command of
-    "f" -> debugHelper ((stepForward state):states)
+    "f" -> debugHelper ((stepForward state):allStates)
     "b" -> debugHelper states
+    "r" -> do
+      newLine <- getLine
+      let command = (resolveError . runParser commandParser) newLine
+      debugHelper (map (uncurry $ replaceLine command) (zip [0..] allStates))
     "p" -> do
       putStr (showCurrentPosition state)
       debugHelper allStates
     "io" -> do
       putStr (showCurrentIO state)
       debugHelper allStates
-    "_" -> do
-      putStr "???"
+    _ -> do
+      putStrLn "???"
       debugHelper allStates
+debugHelper rest = error . show $ rest
 
 stepForward :: ProgramState -> ProgramState
 stepForward ((next:rest), executed, env, stdout, stdin) = (rest, next:executed, newEnv, newStdout, newStdin)
@@ -39,10 +44,11 @@ stepForward ((next:rest), executed, env, stdout, stdin) = (rest, next:executed, 
 stepBackward :: [ProgramState] -> [ProgramState]
 stepBackward (last:rest) = rest
 
-replaceLine :: ProgramState -> IO ProgramState
-replaceLine ((next:rest), executed, env, stdout, stdin) = do
-  newLine <- getLine
-  return (((resolveError (runParser commandParser newLine)):rest), executed, env, stdout, stdin)
+replaceLine :: Command -> Int -> ProgramState -> ProgramState
+replaceLine newCommand 0 ((next:rest), executed, env, stdout, stdin) = ((newCommand:rest), executed, env, stdout, stdin)
+replaceLine newCommand count ((next:rest), executed, env, stdout, stdin) = ((next:newProgram), executed, env, stdout, stdin)
+  where
+  (newProgram, _, _, _, _) = replaceLine newCommand (count - 1) (rest, executed, env, stdout, stdin)
 
 showCurrentPosition :: ProgramState -> String
 showCurrentPosition (remaining, executed, _, _, _) = ((unlines . map show . reverse) executed) ++ "------------\n" ++ ((unlines . map show) remaining)
