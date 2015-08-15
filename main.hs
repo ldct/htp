@@ -23,12 +23,13 @@ step program executed_program ess = do
 	case command of
 		"forward" -> do
 			step (tail program) ([head program] ++ executed_program) (execute ess (head program))
-		"stdin" -> do
-			case ess of (_, _, stdin) -> putStrLn . show $ stdin
-			step program executed_program ess
-		"stdout" -> do
-			case ess of (_, stdout, _) -> putStrLn . show $ stdout
-			step program executed_program ess
+		"io" -> case ess of
+			(_, stdout, stdin) -> do
+				putStr "stdin: "
+				putStrLn . show $ stdin
+				putStr "stdout: "
+				putStrLn . show $ stdout
+				step program executed_program ess
 		"program" -> do
 			putStrLn . unlines . map show . reverse $ executed_program
 			putStrLn "------------"
