@@ -1,7 +1,8 @@
 module Debugger where
+import System.IO (hFlush, stdout)
+
 import Ast (Program, Env)
 import Interpreter (execute, initialEnv)
-import System.IO (hFlush, stdout)
 
 debug :: Program -> [String] -> IO ()
 debug program stdin = step program [] (initialEnv, [], stdin)
