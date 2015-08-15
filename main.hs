@@ -10,11 +10,9 @@ main = do
   args <- getArgs
   case (args) of
     ["c"] -> putStr . compile $ prog
-    ["i"] -> runProgram prog
+    ["i"] -> case (runProgram prog) of
+      (_, stdout) -> (putStr . unlines . reverse) stdout
     _     -> putStrLn "Usage: `./main c` or `./main i`"
 
 prog :: Program
-{-- prog = [Assign 'a' (Add (Val 2) (Val 3)),
-        Read 'b',
-        Print (Add (Var 'a') (Var 'b'))] --}
-prog = parseProgram . unlines $ ["assign a 3 * 2 + 3 + 4", "read b", "assign b b + 1", "print a + b"]
+prog = parseProgram . unlines $ ["assign a 3 * 2", "assign b a + 1", "print a + b", "print b"]

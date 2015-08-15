@@ -1,17 +1,16 @@
 module Interpreter where
 import Data.Maybe (fromMaybe)
-import Control.Monad (foldM)
 import qualified Data.Map.Strict as M
 
 import Ast
 
-runProgram :: Program -> IO ()
-runProgram program = foldM execute M.empty program >> return ()
+runProgram :: Program -> (Env, [String])
+runProgram program = foldl execute (M.empty, []) program
 
-execute :: Env -> Command -> IO Env
-execute env (Assign name val) = return $ M.insert name (eval env val) env
-execute env (Print expr)      = (putStrLn . show . (eval env)) expr >> return env
-execute env (Read name)       = getLine >>= (\input -> execute env (Assign name (Val (read input))))
+execute :: (Env, [String]) -> Command -> (Env, [String])
+execute (env, stdout) (Assign name val) = (M.insert name (eval env val) env, stdout)
+execute (env, stdout) (Print expr)      = (env, ((show . (eval env)) expr):stdout)
+--execute env output (Read name)       = getLine >>= (\input -> execute env (Assign name (Val (read input))))
 
 eval :: Env -> Expr -> Int
 eval _   (Val val)  = val
