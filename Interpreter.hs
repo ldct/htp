@@ -2,9 +2,7 @@ module Interpreter where
 import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M
 
-import Ast
-
-type State = (Env, [String], [String])
+import Types
 
 initialEnv :: Env
 initialEnv = M.empty
@@ -21,7 +19,7 @@ execute (_, _, [])           (Read _)          = error "Ran out of input"
 eval :: Env -> Expr -> Int
 eval _   (Val val)  = val
 eval env (Var name) = fromMaybe (error $ "Var (" ++ [name] ++ ") not found") (M.lookup name env)
-eval env (Add a b)  = (eval env a) +     (eval env b)
-eval env (Sub a b)  = (eval env a) -     (eval env b)
-eval env (Mul a b)  = (eval env a) *     (eval env b)
-eval env (Div a b)  = (eval env a) `div` (eval env b)
+eval env (Op Add a b)  = (eval env a) +     (eval env b)
+eval env (Op Sub a b)  = (eval env a) -     (eval env b)
+eval env (Op Mul a b)  = (eval env a) *     (eval env b)
+eval env (Op Div a b)  = (eval env a) `div` (eval env b)

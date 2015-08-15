@@ -4,7 +4,7 @@ import Text.Parsec hiding (runParser)
 import Data.Char          (isDigit, isAlpha)
 import Control.Monad.Identity
 
-import Ast
+import Types
 
 type Parser a = ParsecT [Char] () Identity a
 
