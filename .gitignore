@@ -2,3 +2,5 @@ main
 build/
 *.hi
 *.o
+.liquid
+.liquid/*
