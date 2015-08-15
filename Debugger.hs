@@ -6,42 +6,46 @@ import Ast (Program, Env)
 import Interpreter (execute, initialEnv)
 import Parser (commandParser, runParser, resolveError)
 
-debug :: Program -> [String] -> IO ()
-debug program stdin = step program [] [(initialEnv, [], stdin)]
+-- remaining program, executed program, env, output, input
+type ProgramState = (Program, Program, Env, [String], [String])
 
-step :: Program -> Program -> [(Env, [String], [String])] -> IO ()
-step program executed_program states@(ess:rest) = do
+debug :: Program -> [String] -> IO ()
+debug program stdin = debugHelper [(program, [], initialEnv, [], stdin)]
+
+debugHelper :: [ProgramState] -> IO ()
+debugHelper allStates@(state:states) = do
   putStr "\27[34m> "
   hFlush stdout
   command <- getLine
+  putStr "\27[0m"
   case command of
-    "f" ->
-      step (tail program)
-         ([head program] ++ executed_program)
-         ((execute ess (head program)):states)
-    "b" ->
-      step ((head executed_program):program)
-         (tail executed_program)
-         rest
-    "r" -> do
-      newLine <- getLine
-      step ((resolveError (runParser commandParser newLine)):(tail program))
-         executed_program
-         states
-    "io" -> case ess of
-      (_, stdout, stdin) -> do
-        putStr "\27[0m"
-        putStr "stdin: "
-        putStrLn . show $ stdin
-        putStr "stdout: "
-        putStrLn . show . reverse $ stdout
-        step program executed_program states
+    "f" -> debugHelper ((stepForward state):states)
+    "b" -> debugHelper states
     "p" -> do
-      putStr "\27[0m"
-      putStr . unlines . map show . reverse $ executed_program
-      putStrLn "------------"
-      putStr . unlines . map show $ program
-      step program executed_program states
-    _ -> do
-      putStrLn "???"
-      step program executed_program states
+      putStr (showCurrentPosition state)
+      debugHelper allStates
+    "io" -> do
+      putStr (showCurrentIO state)
+      debugHelper allStates
+    "_" -> do
+      putStr "???"
+      debugHelper allStates
+
+stepForward :: ProgramState -> ProgramState
+stepForward ((next:rest), executed, env, stdout, stdin) = (rest, next:executed, newEnv, newStdout, newStdin)
+  where
+  (newEnv, newStdout, newStdin) = execute (env, stdout, stdin) next
+
+stepBackward :: [ProgramState] -> [ProgramState]
+stepBackward (last:rest) = rest
+
+replaceLine :: ProgramState -> IO ProgramState
+replaceLine ((next:rest), executed, env, stdout, stdin) = do
+  newLine <- getLine
+  return (((resolveError (runParser commandParser newLine)):rest), executed, env, stdout, stdin)
+
+showCurrentPosition :: ProgramState -> String
+showCurrentPosition (remaining, executed, _, _, _) = ((unlines . map show . reverse) executed) ++ "------------\n" ++ ((unlines . map show) remaining)
+
+showCurrentIO :: ProgramState -> String
+showCurrentIO (_, _, _, stdout, stdin) = unlines ["stdin: ", show stdin, "stdout: ", (show . reverse) stdout]
