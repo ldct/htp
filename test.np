@@ -1,4 +1,5 @@
-read b
-print b + 1
+print 42
 read a
 print a + 1
+read b
+print b + 1

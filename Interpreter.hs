@@ -4,6 +4,9 @@ import qualified Data.Map.Strict as M
 
 import Ast
 
+initialEnv :: Env
+initialEnv = M.empty
+
 runProgram :: String -> Program -> (Env, [String], [String])
 runProgram stdin program = foldl execute (M.empty, [], lines stdin) program
 
