@@ -18,14 +18,20 @@ import Parser (parseProgram)
 --    _ -> putStrLn "Usage: `./main c filename` or `./main i filename`"
 
 step :: Program -> (Env, [String], [String]) -> IO ()
-step program (env, stdout, stdin) = do
+step program ess = do
 	command <- getLine
 	case command of
-		"s" -> do
-			case (execute (env, stdout, stdin) (head program)) of
-				(env, stdout, stdin) -> do
-					putStrLn . show $ stdout
-					step (tail program) (env, stdout, stdin)
+		"forward" -> do
+			step (tail program) (execute ess (head program))
+		"stdin" -> do
+			case ess of (_, _, stdin) -> putStrLn . show $ stdin
+			step program ess
+		"stdout" -> do
+			case ess of (_, stdout, _) -> putStrLn . show $ stdout
+			step program ess
+		_ -> do
+			putStrLn "???"
+			step program ess
 
 main :: IO ()
 main = do
