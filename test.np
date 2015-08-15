@@ -1,0 +1,4 @@
+assign a 3 * 2 + 3 + 4
+read b
+assign b b + 1
+print a + b

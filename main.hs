@@ -9,10 +9,9 @@ main :: IO ()
 main = do
   args <- getArgs
   case (args) of
-    ["c"] -> putStr . compile $ prog
-    ["i"] -> case (runProgram prog) of
-      (_, stdout) -> (putStr . unlines . reverse) stdout
-    _     -> putStrLn "Usage: `./main c` or `./main i`"
-
-prog :: Program
-prog = parseProgram . unlines $ ["assign a 3 * 2", "assign b a + 1", "print a + b", "print b"]
+    ["c" ,filename] -> (putStr . compile . parseProgram) =<< readFile filename
+    ["i" ,filename] -> do
+      contents <- readFile filename
+      case (runProgram . parseProgram $ contents) of
+        (_, stdout) -> (putStr . unlines . reverse) stdout
+    _ -> putStrLn "Usage: `./main c filename` or `./main i filename`"
