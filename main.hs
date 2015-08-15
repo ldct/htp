@@ -1,10 +1,10 @@
 import System.Environment (getArgs)
 
-import Ast
+import Ast (Program, Env)
 import Interpreter (execute, initialEnv)
 import Compiler (compile)
 import Parser (parseProgram)
-import System.IO
+import System.IO (hFlush, stdout)
 
 --main :: IO ()
 --main = do
