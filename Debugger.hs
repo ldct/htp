@@ -7,7 +7,7 @@ import Interpreter (execute, initialEnv)
 debug :: Program -> [String] -> IO ()
 debug program stdin = step program [] [(initialEnv, [], stdin)]
 
-step :: Program -> Program - State -> IO ()
+step :: Program -> Program -> [State] -> IO ()
 step program executed_program states@(ess:rest) = do
   putStr "\27[34m> "
   hFlush stdout
