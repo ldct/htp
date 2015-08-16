@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import System.Environment (getArgs)
 import Interpreter        (initialEnv)
 import Debugger           (ProgramState, stepForward, stepBackward, replaceLine)
 import Parser             (parseProgram, runParser, commandParser, resolveError)
@@ -8,7 +7,6 @@ import Parser             (parseProgram, runParser, commandParser, resolveError)
 import Data.Text (Text, pack, unpack)
 import qualified Network.WebSockets as WS
 import Control.Concurrent (MVar, newEmptyMVar,  putMVar, tryTakeMVar, readMVar)
-import System.IO (hFlush, stdout)
 
 import           Control.Monad      (forever)
 import qualified Network.WebSockets as WS
