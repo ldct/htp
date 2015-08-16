@@ -11,9 +11,10 @@ BNF:
         |  assign <var> <expr>
         |  read <var>
 
-<expr> ::= <expr> + <expr>
+<expr> ::= <val>
+        |  <expr> + <expr>
         |  <expr> - <expr>
         |  <expr> * <expr>
         |  <expr> / <expr>
-        | if <expr> then <program> else <program>
+        |  if <expr> then <program> else <program>
 ```
