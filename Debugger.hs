@@ -19,8 +19,8 @@ debugHelper allStates@(state:states) = do
   command <- getLine
   putStr "\27[0m"
   case command of
-    "f" -> debugHelper ((stepForward state):allStates)
-    "b" -> debugHelper states
+    "f" -> debugHelper (stepForward allStates)
+    "b" -> debugHelper (stepBackward allStates)
     ('r':num) -> do
       newLine <- getLine
       let command = (resolveError . runParser commandParser) newLine
@@ -37,8 +37,8 @@ debugHelper allStates@(state:states) = do
       debugHelper allStates
 debugHelper rest = error . show $ rest
 
-stepForward :: ProgramState -> ProgramState
-stepForward ((next:rest), executed, env, stdout, stdin) = (rest, next:executed, newEnv, newStdout, newStdin)
+stepForward :: [ProgramState] -> [ProgramState]
+stepForward allStates@(((next:rest), executed, env, stdout, stdin):_) = (rest, next:executed, newEnv, newStdout, newStdin):allStates
   where
   (newEnv, newStdout, newStdin) = execute (env, stdout, stdin) next
 
