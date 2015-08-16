@@ -2,7 +2,10 @@ module Types where
 import qualified Data.Map.Strict as M
 import Data.List (intersperse)
 
-type Env = M.Map Char Int
+type Value    = Int
+type Variable = Char
+
+type Env = M.Map Variable Value
 
 type State = (Env, [String], [String])
 
@@ -17,9 +20,6 @@ instance Show Command where
   show (Read name)        = "read " ++ [name]
   show (Assign name expr) = "assign " ++ [name] ++ show expr
   show (Print expr)       = "print " ++ show expr
-
-type Value    = Int
-type Variable = Char
 
 data Expr
   = Op Arith Expr Expr
