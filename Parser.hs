@@ -59,7 +59,7 @@ parens parser = do
   return p'
 
 exprParser :: Parser Expr
-exprParser = opP <|> valueP <|> varP
+exprParser = try opP <|> valueP <|> varP
   where
     valueP = valueParser >>= return . Val
     varP   = varParser   >>= return . Var
