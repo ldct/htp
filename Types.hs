@@ -18,7 +18,7 @@ data Command
 
 instance Show Command where
   show (Read name)        = "read " ++ [name]
-  show (Assign name expr) = "assign " ++ [name] ++ show expr
+  show (Assign name expr) = "assign " ++ [name, ' '] ++ show expr
   show (Print expr)       = "print " ++ show expr
 
 data Expr
