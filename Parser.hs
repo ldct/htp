@@ -8,12 +8,12 @@ import Types
 type Parser a = ParsecT String () Identity a
 
 parseProgram :: String -> Program
-parseProgram = map (resolveError . parseCommand) . lines
+parseProgram = map (resolveError . parseStatement) . lines
 
 runParser :: Parser a -> String -> Either ParseError a
 runParser parser = parse parser "(source)"
 
-parseCommand = runParser commandParser
+parseStatement = runParser statementParser
 parseExpr = runParser exprParser
 
 resolveError = either (error . show) id
@@ -25,7 +25,7 @@ statementParser = do
   expr <- many1 anyChar
   let split = words expr
 
-  return $ case command of
+  return $ case stmt of
     "print"  ->  Print . resolveError $ parseExpr expr
     "assign" ->
       let ([ident] : value1) = split

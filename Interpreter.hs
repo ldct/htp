@@ -16,7 +16,7 @@ execute (env, stdout, stdin) (Print expr)      = (env, ((show . (eval env)) expr
 execute (env, stdout, x:xs)  (Read name)       = execute (env, stdout, xs) (Assign name (Val (read x)))
 execute (_, _, [])           (Read _)          = error "Ran out of input"
 
-eval :: Env -> Expr -> Int
+eval :: Env -> Expr -> Value
 eval _   (Val val)  = val
 eval env (Var name) = fromMaybe (error $ "Var (" ++ [name] ++ ") not found") (M.lookup name env)
 eval env (Op Add a b)  = (eval env a) +     (eval env b)

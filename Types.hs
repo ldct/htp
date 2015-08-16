@@ -3,28 +3,29 @@ import qualified Data.Map.Strict as M
 import Data.List (intersperse)
 
 --type Value    = Int | Bool
-data Value = IntVal Int | BoolVal Bool
+type Value = Int
+
 type Variable = Char -- ['a'..'z'] ++ ['A'..'Z']
 
 type Env = M.Map Variable Value
 
 type State = (Env, [String], [String])
 
-type Program = [Command]
+type Program = [Statement]
 
 data Statement
   = Print  Expr
   | Read   Variable
   | Assign Variable Expr
 
-instance Show Command where
+instance Show Statement where
   show (Read name)        = "read " ++ [name]
   show (Assign name expr) = "assign " ++ [name] ++ show expr
   show (Print expr)       = "print " ++ show expr
 
 -- should distinguish between the types of expressions...
 data Expr
-  = Op Binop Expr Expr
+  = Op Arith Expr Expr
   | Val Value
   | Var Variable
   | ITE Expr Expr Expr

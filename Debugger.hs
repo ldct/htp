@@ -4,7 +4,7 @@ import System.IO (hFlush, stdout)
 
 import Types (Program, Env, Statement)
 import Interpreter (execute, initialEnv)
-import Parser (commandParser, runParser, resolveError)
+import Parser (statementParser, runParser, resolveError)
 
 -- remaining program, executed program, env, output, input
 type ProgramState = (Program, Program, Env, [String], [String])
@@ -23,7 +23,7 @@ debugHelper allStates@(state:states) = do
     "b" -> debugHelper states
     "r" -> do
       newLine <- getLine
-      let command = (resolveError . runParser commandParser) newLine
+      let command = (resolveError . runParser statementParser) newLine
       debugHelper (map (uncurry $ replaceLine command) (zip [0..] allStates))
     "p" -> do
       putStr (showCurrentPosition state)
@@ -44,7 +44,7 @@ stepForward ((next:rest), executed, env, stdout, stdin) = (rest, next:executed, 
 stepBackward :: [ProgramState] -> [ProgramState]
 stepBackward (last:rest) = rest
 
-replaceLine :: Command -> Int -> ProgramState -> ProgramState
+replaceLine :: Statement -> Int -> ProgramState -> ProgramState
 replaceLine newCommand 0 ((next:rest), executed, env, stdout, stdin) = ((newCommand:rest), executed, env, stdout, stdin)
 replaceLine newCommand count ((next:rest), executed, env, stdout, stdin) = ((next:newProgram), executed, env, stdout, stdin)
   where
