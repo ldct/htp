@@ -1,5 +1,7 @@
 BNF:
+---
 
+```
 <var> ::= ^[a-zA-Z]$
 <val> ::= ^[0-9]*$
 
@@ -14,3 +16,4 @@ BNF:
         |  <expr> * <expr>
         |  <expr> / <expr>
         | if <expr> then <program> else <program>
+```
