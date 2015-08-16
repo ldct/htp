@@ -1,6 +1,5 @@
 import System.Environment (getArgs)
 
-import Ast                (Program, Env)
 import Interpreter        (runProgram)
 import Compiler           (compile)
 import Debugger           (debug)

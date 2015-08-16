@@ -1,7 +1,7 @@
 module Compiler where
 import Data.List (intersperse, nub)
 
-import Ast
+import Types
 
 compile :: Program -> String
 compile program = preProgram ++ (unlines . map ("  " ++ )) (declarations:mainProgram) ++ postProgram
@@ -23,10 +23,10 @@ transformCommand (Read name)       = "scanf(\"%d\", &" ++ name:");"
 transformExpr :: Expr -> String
 transformExpr (Val val)  = show val
 transformExpr (Var name) = [name]
-transformExpr (Add a b)  = ('(':) . (++ ")") . concat . (intersperse "+") . (map transformExpr) $ [a, b]
-transformExpr (Sub a b)  = ('(':) . (++ ")") . concat . (intersperse "-") . (map transformExpr) $ [a, b]
-transformExpr (Mul a b)  = ('(':) . (++ ")") . concat . (intersperse "*") . (map transformExpr) $ [a, b]
-transformExpr (Div a b)  = ('(':) . (++ ")") . concat . (intersperse "/") . (map transformExpr) $ [a, b]
+transformExpr (Op Add a b)  = ('(':) . (++ ")") . concat . (intersperse "+") . (map transformExpr) $ [a, b]
+transformExpr (Op Sub a b)  = ('(':) . (++ ")") . concat . (intersperse "-") . (map transformExpr) $ [a, b]
+transformExpr (Op Mul a b)  = ('(':) . (++ ")") . concat . (intersperse "*") . (map transformExpr) $ [a, b]
+transformExpr (Op Div a b)  = ('(':) . (++ ")") . concat . (intersperse "/") . (map transformExpr) $ [a, b]
 
 declareVars :: [Char] -> String
 declareVars = (++ ";") . ("int " ++) . (concat . intersperse ", ") . (map (:[]))
@@ -41,8 +41,8 @@ findVars = nub . (concatMap findVarsCommand)
   findVarsExpr :: Expr -> [Char]
   findVarsExpr (Val _)    = []
   findVarsExpr (Var name) = [name]
-  findVarsExpr (Add a b)  = concatMap findVarsExpr [a, b]
-  findVarsExpr (Sub a b)  = concatMap findVarsExpr [a, b]
-  findVarsExpr (Mul a b)  = concatMap findVarsExpr [a, b]
-  findVarsExpr (Div a b)  = concatMap findVarsExpr [a, b]
+  findVarsExpr (Op Add a b)  = concatMap findVarsExpr [a, b]
+  findVarsExpr (Op Sub a b)  = concatMap findVarsExpr [a, b]
+  findVarsExpr (Op Mul a b)  = concatMap findVarsExpr [a, b]
+  findVarsExpr (Op Div a b)  = concatMap findVarsExpr [a, b]
 
