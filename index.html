@@ -1,0 +1,30 @@
+<html>
+<head>
+  <script src="libs/jquery-2.1.3.js"></script>
+  <script src="libs/underscore.js"></script>
+  <link rel="stylesheet" href="libs/normalize.css">
+  <link rel="stylesheet" href="libs/skeleton.css">
+</head>
+<body>
+  <div id="screen1" class="container">
+    <textarea id="source" rows="5" cols="40"></textarea><br>
+    <button id="submitSource">Debug</button>
+  </div>
+  <div id="screen2" style="display:none;" class="container">
+    <div class="row">
+      <div class="ten columns" id="left">
+        <div class="row">
+          <button id="stepForward">
+            Forward
+          </button>
+          <button id="stepBackward">
+            Backward
+          </button>
+        </div>
+      </div>
+      <div class="two columns" id="right"></div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

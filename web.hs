@@ -23,13 +23,16 @@ application state pending = do
     case maybeProgStates of
       Nothing -> do
         putMVar state [(parseProgram . unpack $ msg, [], initialEnv, [], [])]
+        (WS.sendTextData conn) . pack $ "recieved source"
       Just progStates -> do
         let action = words . unpack $ msg
+        putStr . show $ msg
         case action of
           ["f"] -> putMVar state (stepForward progStates)
           ["b"] -> putMVar state (stepBackward progStates)
-          ["r", num, line] -> do -- r closes the connection; fix?
-            let command = (resolveError . runParser commandParser) line
+          ("r":num:line) -> do -- r closes the connection; fix?
+            error . show $ line
+            let command = (resolveError . runParser commandParser) (unwords line)
             let offset = read num
             putMVar state (map (uncurry $ replaceLine command) (zip (map (+ offset) [0..]) progStates))
           _ -> putMVar state progStates
@@ -37,7 +40,7 @@ application state pending = do
         let (restProgram, executed, env, stdout, stdin):_ = newStates
         (WS.sendTextData conn) . pack $ "stdin\n" ++ (unlines stdin)
         (WS.sendTextData conn) . pack $ "stdout\n" ++ (unlines . reverse $ stdout)
-        (WS.sendTextData conn) . pack $ "linesRemaining\n" ++ (show . length $ restProgram)
+        (WS.sendTextData conn) . pack $ "linesRemaining\n" ++ (show . length $ executed)
         (WS.sendTextData conn) . pack $ "prog\n" ++ (unlines . (map show) $ (reverse executed) ++ restProgram)
     return ()
 
