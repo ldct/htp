@@ -26,12 +26,10 @@ application state pending = do
         (WS.sendTextData conn) . pack $ "recieved source"
       Just progStates -> do
         let action = words . unpack $ msg
-        putStr . show $ msg
         case action of
           ["f"] -> putMVar state (stepForward progStates)
           ["b"] -> putMVar state (stepBackward progStates)
           ("r":num:line) -> do -- r closes the connection; fix?
-            error . show $ line
             let command = (resolveError . runParser commandParser) (unwords line)
             let offset = read num
             putMVar state (map (uncurry $ replaceLine command) (zip (map (+ offset) [0..]) progStates))

@@ -21,9 +21,6 @@ $("#submitSource").on("click", function() {
         $("#line_"+i).val(source[i]);
         $("<br>").appendTo(left);
         $("#change_" + i).on("click", function() {
-          console.log(i)
-          console.log(pos)
-          console.log($("#line_" + i).val());
           if (i < pos)
             return;
           sock.send("r " + (i - pos) + " " + $("#line_" + i).val());
