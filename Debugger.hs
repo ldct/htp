@@ -21,10 +21,11 @@ debugHelper allStates@(state:states) = do
   case command of
     "f" -> debugHelper ((stepForward state):allStates)
     "b" -> debugHelper states
-    "r" -> do
+    ('r':num) -> do
       newLine <- getLine
       let command = (resolveError . runParser commandParser) newLine
-      debugHelper (map (uncurry $ replaceLine command) (zip [0..] allStates))
+      let offset = if (null num) then 0 else (read num)
+      debugHelper (map (uncurry $ replaceLine command) (zip (map (+ offset) [0..]) allStates))
     "p" -> do
       putStr (showCurrentPosition state)
       debugHelper allStates
