@@ -5,7 +5,7 @@ import Control.Monad.Identity
 
 import Types
 
-type Parser a = ParsecT [Char] () Identity a
+type Parser a = ParsecT String () Identity a
 
 parseProgram :: String -> Program
 parseProgram = map (resolveError . parseCommand) . lines
