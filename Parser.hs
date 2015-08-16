@@ -49,7 +49,7 @@ valueParser :: Parser Value
 valueParser = many1 digit >>= return . read
 
 varParser :: Parser Variable
-varParser = anyChar --oneOf ['a'..'z']
+varParser = oneOf $ ['a'..'z'] ++ ['A'..'Z']
 
 parens :: Parser a -> Parser a
 parens parser = do
