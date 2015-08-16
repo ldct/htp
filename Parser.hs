@@ -49,10 +49,32 @@ valueParser :: Parser Value
 valueParser = many1 digit >>= return . read
 
 varParser :: Parser Variable
-varParser = char
+varParser = anyChar --oneOf ['a'..'z']
+
+parens :: Parser a -> Parser a
+parens parser = do
+  char '('
+  p' <- parser
+  char ')'
+  return p'
 
 exprParser :: Parser Expr
-exprParser = do
+exprParser = opP <|> valueP <|> varP
+  where
+    valueP = valueParser >>= return . Val
+    varP   = varParser   >>= return . Var
+    opP    = do
+      e1 <- valueP <|> varP <|> parens opP
+      spaces
+      op <- arithParser
+      spaces
+      e2 <- valueP <|> varP <|> parens opP
+      return (Op op e1 e2)
+
+{-
+
+exprParser1 :: Parser Expr
+exprParser1 = do
   spaces
 
   itemRaw <- manyTill (digit <|> oneOf ['a'..'z'])
@@ -76,6 +98,7 @@ exprParser = do
     other    -> error . show $ other
   where
     parseRest :: String -> Expr
-    parseRest rest = case runParser exprParser rest of
+    parseRest rest = case runParser exprParser1 rest of
       Right expr -> expr
       Left  err  -> (error . show) err
+-}
