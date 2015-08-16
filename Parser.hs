@@ -1,4 +1,3 @@
--- TODO: replace all uses of head and tail with pattern matching/total functions
 module Parser where
 import Text.Parsec hiding (runParser)
 import Data.Char          (isDigit, isAlpha)
@@ -70,35 +69,3 @@ exprParser = try opP <|> valueP <|> varP
       spaces
       e2 <- valueP <|> varP <|> parens opP
       return (Op op e1 e2)
-
-{-
-
-exprParser1 :: Parser Expr
-exprParser1 = do
-  spaces
-
-  itemRaw <- manyTill (digit <|> oneOf ['a'..'z'])
-             ((space >> return ()) <|> eof)
-
-  spaces
-
-  rest <- many anyChar
-  let item = if all isDigit itemRaw
-             then Val $ read itemRaw
-             else if (isAlpha . head) itemRaw
-             then Var $ head itemRaw
-             else error "invalid expression"
-
-  return $ case rest of
-    []       -> item
-    ('+':xs) -> Add item (parseRest xs)
-    ('-':xs) -> Sub item (parseRest xs)
-    ('*':xs) -> Mul item (parseRest xs)
-    ('/':xs) -> Div item (parseRest xs)
-    other    -> error . show $ other
-  where
-    parseRest :: String -> Expr
-    parseRest rest = case runParser exprParser1 rest of
-      Right expr -> expr
-      Left  err  -> (error . show) err
--}
