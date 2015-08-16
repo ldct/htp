@@ -15,7 +15,7 @@ compile program = preProgram ++ (unlines . map ("  " ++ )) (declarations:mainPro
   postProgram :: String
   postProgram = "}\n"
 
-transformCommand :: Command -> String
+transformCommand :: Statement -> String
 transformCommand (Assign name val) = name:" = " ++ (transformExpr val) ++ ";"
 transformCommand (Print expr)      = "printf(\"%d\\n\", " ++ (transformExpr expr) ++ ");"
 transformCommand (Read name)       = "scanf(\"%d\", &" ++ name:");"
@@ -34,7 +34,7 @@ declareVars = (++ ";") . ("int " ++) . (concat . intersperse ", ") . (map (:[]))
 findVars :: Program -> [Char]
 findVars = nub . (concatMap findVarsCommand)
   where
-  findVarsCommand :: Command -> [Char]
+  findVarsCommand :: Statement -> [Char]
   findVarsCommand (Assign name val) = name:(findVarsExpr val)
   findVarsCommand (Print expr)      = findVarsExpr expr
   findVarsCommand (Read name)       = [name]
@@ -45,4 +45,3 @@ findVars = nub . (concatMap findVarsCommand)
   findVarsExpr (Op Sub a b)  = concatMap findVarsExpr [a, b]
   findVarsExpr (Op Mul a b)  = concatMap findVarsExpr [a, b]
   findVarsExpr (Op Div a b)  = concatMap findVarsExpr [a, b]
-

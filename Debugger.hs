@@ -2,7 +2,7 @@
 module Debugger where
 import System.IO (hFlush, stdout)
 
-import Types (Program, Env, Command)
+import Types (Program, Env, Statement)
 import Interpreter (execute, initialEnv)
 import Parser (commandParser, runParser, resolveError)
 

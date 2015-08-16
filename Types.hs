@@ -12,7 +12,7 @@ type State = (Env, [String], [String])
 
 type Program = [Command]
 
-data Command
+data Statement
   = Print  Expr
   | Read   Variable
   | Assign Variable Expr

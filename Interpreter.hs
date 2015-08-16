@@ -10,7 +10,7 @@ initialEnv = M.empty
 runProgram :: String -> Program -> State
 runProgram stdin program = foldl execute (M.empty, [], lines stdin) program
 
-execute :: State -> Command -> State
+execute :: State -> Statement -> State
 execute (env, stdout, stdin) (Assign name val) = (M.insert name (eval env val) env, stdout, stdin)
 execute (env, stdout, stdin) (Print expr)      = (env, ((show . (eval env)) expr):stdout, stdin)
 execute (env, stdout, x:xs)  (Read name)       = execute (env, stdout, xs) (Assign name (Val (read x)))

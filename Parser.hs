@@ -18,9 +18,9 @@ parseExpr = runParser exprParser
 
 resolveError = either (error . show) id
 
-commandParser :: Parser Command
-commandParser = do
-  command <- many1 letter
+statementParser :: Parser Statement
+statementParser = do
+  stmt <- many1 letter
   spaces
   expr <- many1 anyChar
   let split = words expr
