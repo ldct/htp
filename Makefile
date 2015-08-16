@@ -1,7 +1,7 @@
 all:
 	@mkdir -p build
 	@-mv build/*.o build/*.hi .
-	@ghc -w main.hs
+	@ghc -w web.hs
 	@-mv *.o *.hi build
 
 edit:
