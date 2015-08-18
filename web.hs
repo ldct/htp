@@ -26,7 +26,6 @@ application state pending = do
         (WS.sendTextData conn) . pack $ "recieved source"
       Just progStates -> do
         let action = words . unpack $ msg
-        putStr . show $ action
         case action of
           ["f"] -> putMVar state (stepForward progStates)
           ["b"] -> putMVar state (stepBackward progStates)
