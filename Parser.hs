@@ -16,6 +16,7 @@ runParser parser = parse parser "(source)"
 parseCommand = runParser commandParser
 parseExpr = runParser exprParser
 
+resolveError :: Either ParseError a -> a
 resolveError = either (error . show) id
 
 commandParser :: Parser Command
